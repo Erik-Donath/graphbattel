@@ -1,6 +1,6 @@
 {
-  "name": "react-github-pages",
-  "description": "React Github Pages",
+  "name": "graphbattel",
+  "description": "A game where you can fight against players by writting math equations.",
   "homepage": "",
   "private": true,
   "version": "0.0.0",
