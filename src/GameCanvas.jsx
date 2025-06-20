@@ -1,66 +1,87 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import './App.css';
 
 function GameCanvas() {
   const canvasRef = useRef(null);
+  const containerRef = useRef(null);
   const rangeMin = -20;
   const rangeMax = 20;
 
-  function drawAxes(ctx, canvasWidth, canvasHeight) {
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+
+  function drawAxes(ctx, width, height) {
+    ctx.clearRect(0, 0, width, height);
     ctx.strokeStyle = '#333';
     ctx.lineWidth = 2;
     ctx.font = '12px Arial';
     ctx.fillStyle = '#333';
 
+    // Draw axes
     ctx.beginPath();
-    ctx.moveTo(0, canvasHeight / 2);
-    ctx.lineTo(canvasWidth, canvasHeight / 2);
-    ctx.moveTo(canvasWidth / 2, 0);
-    ctx.lineTo(canvasWidth / 2, canvasHeight);
+    ctx.moveTo(0, height / 2);
+    ctx.lineTo(width, height / 2);
+    ctx.moveTo(width / 2, 0);
+    ctx.lineTo(width / 2, height);
     ctx.stroke();
 
-    const stepX = Math.floor(canvasWidth / 10);
-    for (let x = 0; x <= canvasWidth; x += stepX) {
+    // Draw ticks on X axis
+    const tickCountX = 10;
+    for (let i = 0; i <= tickCountX; i++) {
+      const x = i * (width / tickCountX);
       ctx.beginPath();
-      ctx.moveTo(x, canvasHeight / 2 - 5);
-      ctx.lineTo(x, canvasHeight / 2 + 5);
+      ctx.moveTo(x, height / 2 - 5);
+      ctx.lineTo(x, height / 2 + 5);
       ctx.stroke();
-      if (x !== canvasWidth / 2) {
-        const label = ((x - canvasWidth / 2) / (canvasWidth / (rangeMax - rangeMin))) * (rangeMax - rangeMin) / (canvasWidth / stepX);
-        ctx.fillText(label.toFixed(0), x - 6, canvasHeight / 2 + 20);
+      if (x !== width / 2) {
+        const label = Math.round(((x - width / 2) / (width / (rangeMax - rangeMin))) * (rangeMax - rangeMin) / (width / (width / tickCountX)));
+        ctx.fillText(label, x - 6, height / 2 + 20);
       }
     }
 
-    const stepY = Math.floor(canvasHeight / 10);
-    for (let y = 0; y <= canvasHeight; y += stepY) {
+    // Draw ticks on Y axis
+    const tickCountY = 10;
+    for (let i = 0; i <= tickCountY; i++) {
+      const y = i * (height / tickCountY);
       ctx.beginPath();
-      ctx.moveTo(canvasWidth / 2 - 5, y);
-      ctx.lineTo(canvasWidth / 2 + 5, y);
+      ctx.moveTo(width / 2 - 5, y);
+      ctx.lineTo(width / 2 + 5, y);
       ctx.stroke();
-      if (y !== canvasHeight / 2) {
-        const label = ((canvasHeight / 2 - y) / (canvasHeight / (rangeMax - rangeMin))) * (rangeMax - rangeMin) / (canvasHeight / stepY);
-        ctx.fillText(label.toFixed(0), canvasWidth / 2 + 10, y + 4);
+      if (y !== height / 2) {
+        const label = Math.round(((height / 2 - y) / (height / (rangeMax - rangeMin))) * (rangeMax - rangeMin) / (height / (height / tickCountY)));
+        ctx.fillText(label, width / 2 + 10, y + 4);
       }
     }
   }
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    const canvasWidth = canvas.width;
-    const canvasHeight = canvas.height;
+    function updateSize() {
+      if (containerRef.current) {
+        setDimensions({
+          width: containerRef.current.clientWidth,
+          height: containerRef.current.clientHeight,
+        });
+      }
+    }
 
-    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-    drawAxes(ctx, canvasWidth, canvasHeight);
+    updateSize();
+    window.addEventListener('resize', updateSize);
+    return () => window.removeEventListener('resize', updateSize);
   }, []);
 
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (canvas && dimensions.width && dimensions.height) {
+      canvas.width = dimensions.width;
+      canvas.height = dimensions.height;
+      const ctx = canvas.getContext('2d');
+      drawAxes(ctx, dimensions.width, dimensions.height);
+    }
+  }, [dimensions]);
+
   return (
-    <canvas
-      className="game-canvas"
-      ref={canvasRef}
-      width={window.innerWidth * 0.95}
-      height={window.innerHeight * 0.7}
-    />
+    <div ref={containerRef} className="game-canvas-container">
+      <canvas ref={canvasRef} className="game-canvas" />
+    </div>
   );
 }
 
