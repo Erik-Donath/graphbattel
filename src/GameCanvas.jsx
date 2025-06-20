@@ -48,7 +48,7 @@ function drawGraph(ctx, width, height) {
   ctx.restore();
 }
 
-export default function GameCanvas({ graphHeight }) {
+export default function GameCanvas() {
   const graphRef = useRef(null);
 
   useEffect(() => {
@@ -63,14 +63,34 @@ export default function GameCanvas({ graphHeight }) {
 
     drawAxes(ctx, canvas.width / dpr, canvas.height / dpr);
     drawGraph(ctx, canvas.width / dpr, canvas.height / dpr);
-  }, [graphHeight]);
+  }, []);
+
+  // Resize on window change
+  useEffect(() => {
+    function redraw() {
+      const canvas = graphRef.current;
+      if (!canvas) return;
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = canvas.offsetWidth * dpr;
+      canvas.height = canvas.offsetHeight * dpr;
+      const ctx = canvas.getContext("2d");
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      drawAxes(ctx, canvas.width / dpr, canvas.height / dpr);
+      drawGraph(ctx, canvas.width / dpr, canvas.height / dpr);
+    }
+    window.addEventListener("resize", redraw);
+    redraw();
+    return () => window.removeEventListener("resize", redraw);
+  }, []);
 
   return (
     <canvas
       ref={graphRef}
       className="graph-canvas"
       width={800}
-      height={graphHeight}
+      height={400}
       style={{ width: "100%", height: "100%", display: "block" }}
     />
   );
