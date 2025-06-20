@@ -1,4 +1,4 @@
-export default function ControllPanel() {
+export default function ControllPanel({ funcString, setFuncString }) {
   return (
     <div className="control-panel">
       <h2>Control Panel</h2>
@@ -10,7 +10,12 @@ export default function ControllPanel() {
       <div className="controls-row">
         <label>
           Function:
-          <input type="text" defaultValue="sin(x)" />
+          <input
+            type="text"
+            value={funcString}
+            onChange={e => setFuncString(e.target.value)}
+            placeholder="Enter y = f(x)"
+          />
         </label>
       </div>
     </div>

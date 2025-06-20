@@ -7,7 +7,7 @@ const X_MIN = -20;
 const X_MAX = 20;
 const Y_MIN = -10;
 const Y_MAX = 10;
-const SAMPLE_STEP = 0.05;
+const SAMPLE_STEP = 0.005;
 
 function toCanvasCoords(x, y, width, height) {
   const px = ((x - X_MIN) / (X_MAX - X_MIN)) * width;
