@@ -1,53 +1,45 @@
 import { useRef, useEffect } from 'react';
+import './App.css';
 
 function GameCanvas() {
   const canvasRef = useRef(null);
-  const width = 600;
-  const height = 600;
   const rangeMin = -20;
   const rangeMax = 20;
-  const step = 40; // pixels per unit for ticks, adjusted for bigger range
 
-  // Function to draw axes
-  function drawAxes(ctx) {
+  function drawAxes(ctx, canvasWidth, canvasHeight) {
     ctx.strokeStyle = '#333';
     ctx.lineWidth = 2;
     ctx.font = '12px Arial';
     ctx.fillStyle = '#333';
 
-    // Draw X and Y axes
     ctx.beginPath();
-    // X axis
-    ctx.moveTo(0, height / 2);
-    ctx.lineTo(width, height / 2);
-    // Y axis
-    ctx.moveTo(width / 2, 0);
-    ctx.lineTo(width / 2, height);
+    ctx.moveTo(0, canvasHeight / 2);
+    ctx.lineTo(canvasWidth, canvasHeight / 2);
+    ctx.moveTo(canvasWidth / 2, 0);
+    ctx.lineTo(canvasWidth / 2, canvasHeight);
     ctx.stroke();
 
-    // Draw ticks on X axis
-    for (let x = 0; x <= width; x += step) {
+    const stepX = Math.floor(canvasWidth / 10);
+    for (let x = 0; x <= canvasWidth; x += stepX) {
       ctx.beginPath();
-      ctx.moveTo(x, height / 2 - 5);
-      ctx.lineTo(x, height / 2 + 5);
+      ctx.moveTo(x, canvasHeight / 2 - 5);
+      ctx.lineTo(x, canvasHeight / 2 + 5);
       ctx.stroke();
-      // Add labels
-      if (x !== width / 2) {
-        const label = ((x - width / 2) / (width / (rangeMax - rangeMin))) * (rangeMax - rangeMin) / (width / step);
-        ctx.fillText(label.toFixed(0), x - 6, height / 2 + 20);
+      if (x !== canvasWidth / 2) {
+        const label = ((x - canvasWidth / 2) / (canvasWidth / (rangeMax - rangeMin))) * (rangeMax - rangeMin) / (canvasWidth / stepX);
+        ctx.fillText(label.toFixed(0), x - 6, canvasHeight / 2 + 20);
       }
     }
 
-    // Draw ticks on Y axis
-    for (let y = 0; y <= height; y += step) {
+    const stepY = Math.floor(canvasHeight / 10);
+    for (let y = 0; y <= canvasHeight; y += stepY) {
       ctx.beginPath();
-      ctx.moveTo(width / 2 - 5, y);
-      ctx.lineTo(width / 2 + 5, y);
+      ctx.moveTo(canvasWidth / 2 - 5, y);
+      ctx.lineTo(canvasWidth / 2 + 5, y);
       ctx.stroke();
-      // Add labels
-      if (y !== height / 2) {
-        const label = ((height / 2 - y) / (height / (rangeMax - rangeMin))) * (rangeMax - rangeMin) / (height / step);
-        ctx.fillText(label.toFixed(0), width / 2 + 10, y + 4);
+      if (y !== canvasHeight / 2) {
+        const label = ((canvasHeight / 2 - y) / (canvasHeight / (rangeMax - rangeMin))) * (rangeMax - rangeMin) / (canvasHeight / stepY);
+        ctx.fillText(label.toFixed(0), canvasWidth / 2 + 10, y + 4);
       }
     }
   }
@@ -55,43 +47,21 @@ function GameCanvas() {
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
+    const canvasWidth = canvas.width;
+    const canvasHeight = canvas.height;
 
-    // Clear canvas
-    ctx.clearRect(0, 0, width, height);
-
-    // Draw coordinate system
-    drawAxes(ctx);
+    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+    drawAxes(ctx, canvasWidth, canvasHeight);
   }, []);
 
   return (
-    <div style={styles.container}>
-      <canvas
-        ref={canvasRef}
-        width={width}
-        height={height}
-        style={styles.canvas}
-      />
-    </div>
+    <canvas
+      className="game-canvas"
+      ref={canvasRef}
+      width={window.innerWidth * 0.95}
+      height={window.innerHeight * 0.7}
+    />
   );
 }
-
-const styles = {
-  container: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    minHeight: '100vh',
-    backgroundColor: '#f9f9f9',
-    margin: 0,
-    padding: 0,
-    boxSizing: 'border-box',
-  },
-  canvas: {
-    border: '2px solid #333',
-    borderRadius: '8px',
-    boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-    backgroundColor: '#fff',
-  }
-};
 
 export default GameCanvas;
