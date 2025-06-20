@@ -1,5 +1,6 @@
 import { useRef, useEffect } from "react";
 import { create, all } from "mathjs";
+import PropTypes from "prop-types";
 
 const math = create(all, {});
 
@@ -151,4 +152,8 @@ export default function GameCanvas({ funcString = "sin(x)" }) {
       style={{ width: "100%", height: "100%", display: "block" }}
     />
   );
+}
+
+GameCanvas.propTypes = {
+  funcString: PropTypes.string.isRequired
 }

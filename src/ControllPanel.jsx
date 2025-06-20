@@ -1,3 +1,5 @@
+import PropTypes from "prop-types";
+
 export default function ControllPanel({ funcString, setFuncString }) {
   return (
     <div className="control-panel">
@@ -20,4 +22,9 @@ export default function ControllPanel({ funcString, setFuncString }) {
       </div>
     </div>
   );
+}
+
+ControllPanel.propTypes = {
+  funcString: PropTypes.string.isRequired,
+  setFuncString: PropTypes.string.isRequired
 }
