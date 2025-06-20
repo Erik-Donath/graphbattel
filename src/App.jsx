@@ -1,7 +1,8 @@
+import GameCanvas from "./GameCanvas"
 
 function App() {
   return (
-    <h1>Graphbattel</h1>
+    <GameCanvas />
   )
 }
 
